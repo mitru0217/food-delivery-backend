@@ -1,15 +1,26 @@
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const models = require('./models/models');
+const sequelize = require('./db');
+const errorHandler = require('./middleware/errorHandlingMiddleware');
+const router = require('./routes/index');
+const PORT = process.env.PORT || 5000;
+const app = express();
 
-//   "dependencies": {
-//     "": "^5.1.1",
-//     "": "^2.8.5",
-//     "dotenv": "^16.3.1",
-//     "express": "^4.18.2",
-//     ": "^1.4.2",
-//     "": "^9.0.2",
-//     "mysql": "^2.18.1",
-//     "": "^3.6.4",
-//     "": "^6.35.1"
-//   },
-//   "devDependencies": {
-//     "nodemon": "^3.0.1"
-//   }
+app.use(cors());
+app.use(express.json());
+app.use('/', router);
+app.use(errorHandler);
+
+const start = async () => {
+  try {
+    await sequelize.authenticate();
+    await sequelize.sync();
+    app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+start();
