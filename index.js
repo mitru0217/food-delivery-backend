@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const models = require('./models/models');
 const sequelize = require('./db');
 const errorHandler = require('./middleware/errorHandlingMiddleware');
@@ -10,7 +11,8 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use('/', router);
+app.use(cookieParser());
+app.use('/api', router);
 app.use(errorHandler);
 
 const start = async () => {
