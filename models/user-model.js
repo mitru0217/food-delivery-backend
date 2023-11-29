@@ -1,4 +1,3 @@
-const { LONG } = require('mysql/lib/protocol/constants/types');
 const sequelize = require('../db');
 const { DataTypes } = require('sequelize');
 
@@ -36,7 +35,7 @@ const Token = sequelize.define('token', {
     allowNull: false,
     references: {
       model: User,
-      key: 'id', // Ссылается на поле 'id' в модели User
+      key: 'id', // Refers to a field  'id' in the model User
     },
   },
   refreshToken: {
@@ -44,14 +43,14 @@ const Token = sequelize.define('token', {
   },
 });
 
-// Устанавливаем ассоциацию
+// set an an association
 Token.belongsTo(User, {
-  // указывает, что каждая запись в таблице Token принадлежит одному пользователю из таблицы User
+  // indicates that each record in the table Token belongs to one user from the table User
   foreignKey: 'userID',
 });
 User.hasMany(Token, {
-  // указывает, что у каждого пользователя может быть много токенов.foreignKey используется для определения поля,
-  foreignKey: 'userID', // через которое происходит связь между таблицами.
+  // indicates that each user can have plenty tokens.'foreignKey' is used to determine  the field,
+  foreignKey: 'userID', // through which the relationship between tables occurs.
 });
 
 module.exports = {

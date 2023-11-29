@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const { User } = require('../models/models');
+const { User } = require('../models/user-model');
 const ApiError = require('../error/apiError');
 const tokenService = require('../service/token-service');
 const { generateAndSaveTokens } = require('../utils/generateAndSaveTokens');
@@ -26,7 +26,7 @@ class UserService {
       password: hashPassword,
     });
 
-    return generateAndSaveTokens(user);
+    return generateAndSaveTokens(user, tokenService);
   }
   async login(email, password) {
     const user = await User.findOne({ where: { email } });
@@ -39,7 +39,7 @@ class UserService {
       throw ApiError.badRequest('Incorrect password');
     }
 
-    return generateAndSaveTokens(user);
+    return generateAndSaveTokens(user, tokenService);
   }
   //The logout() function uses the removeToken() function to delete the token based on the refreshToken
   async logout(refreshToken) {
@@ -64,7 +64,7 @@ class UserService {
     }
     const user = await User.findByPk({ where: userData.id });
 
-    return generateAndSaveTokens(user);
+    return generateAndSaveTokens(user, tokenService);
   }
 }
 module.exports = new UserService();

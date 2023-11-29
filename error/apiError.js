@@ -6,10 +6,10 @@ class ApiError extends Error {
     this.message = message;
     this.errors = errors;
   }
-  static unauthorized() {
+
+  static unauthorized(message = 'Unauthorized') {
     return new ApiError(401, message);
   }
-
   static badRequest(message) {
     return new ApiError(400, message);
   }
@@ -20,6 +20,10 @@ class ApiError extends Error {
 
   static forbidden(message) {
     return new ApiError(403, message);
+  }
+
+  static adminNotFound() {
+    return new ApiError(404, message);
   }
 }
 

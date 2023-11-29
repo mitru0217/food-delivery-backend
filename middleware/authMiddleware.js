@@ -1,22 +1,33 @@
-const jwt = require('jsonwebtoken');
+const ApiError = require('../error/apiError');
+const adminTokenService = require('../service/admin-token-service');
 
 module.exports = function (req, res, next) {
-  if (req.method === 'OPTIONS') {
-    next();
-  }
   try {
-    const token = req.header.authorization.split('')[1];
-
-    if (!token) {
-      return res.status(401).json({ message: 'Не авторизован' });
+    //get authorization header from request body
+    const authorizationHeader = req.headers.authorization;
+    // check for the presence of authorization header
+    if (!authorizationHeader) {
+      // if the header is missing we throw an error and pass it to the next handler
+      return next(ApiError.unauthorized());
     }
-
-    const decoded = jwt.verify(token, process.env.SECRET_KEY);
-
-    req.user = decoded;
-
+    // get access token from header and split the string to get only token without word "Bearer"
+    const accessToken = authorizationHeader.split(' ')[1];
+    // check for the presence of access token
+    if (!accessToken) {
+      // if the access token is missing we throw an error and pass it to the next handler
+      return next(ApiError.unauthorized());
+    }
+    // check the access token through the service 'adminTokenService' for validation
+    const userData = adminTokenService.validateAccessToken(accessToken);
+    // check user data after token validation
+    if (!userData) {
+      return next(ApiError.unauthorized());
+    }
+    // if all checks were successful, then add information about user to the request object
+    req.user = userData;
+    // transfer control to the next handler
     next();
   } catch (e) {
-    res.status(401).json({ message: 'Не авторизован' });
+    return next(ApiError.unauthorized());
   }
 };
