@@ -11,7 +11,8 @@ const validateInputs = [
   body('password').isLength({ min: 3, max: 10 }),
 ];
 // register and login
-router.post('/', validateInputs, async (req, res, next) => {
+router.post('', validateInputs, async (req, res, next) => {
+  console.log('Received POST request on root path');
   const { action } = req.body;
   try {
     if (action === 'register') {
@@ -28,6 +29,6 @@ router.post('/', validateInputs, async (req, res, next) => {
 
 router.post('/logout', userController.logout); // remove refresh token
 
-router.get('/refresh', userController.refresh); //overwrite access token, if it's died
+router.get('', userController.refresh); //overwrite access token, if it's died
 
 module.exports = router;
