@@ -29,6 +29,6 @@ router.post('', validateInputs, async (req, res, next) => {
 
 router.post('/logout', userController.logout); // remove refresh token
 
-router.get('', userController.refresh); //overwrite access token, if it's died
+router.get('/refresh', userController.refresh); //overwrite access token, if it's died
 
 module.exports = router;

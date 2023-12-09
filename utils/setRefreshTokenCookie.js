@@ -10,6 +10,7 @@ async function setRefreshTokenCookie(res, refreshToken) {
     return true;
   } catch (error) {
     // if there was an error setting the cookie
+    console.error('Error setting refreshToken cookie:', error);
     return false;
   }
 }
