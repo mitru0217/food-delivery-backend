@@ -80,6 +80,18 @@ class UserController {
       next(e);
     }
   }
+  async avatar(req, res, next) {
+    try {
+      console.log(req.user);
+      const id = req.user.userId;
+
+      const pathFile = req.file.path;
+      const url = await userService.updateAvatar(id, pathFile);
+      return res.json({ status: 'success', avatarUrl: url });
+    } catch (e) {
+      next(e);
+    }
+  }
 }
 
 module.exports = UserController;

@@ -2,7 +2,7 @@ const Router = require('express');
 const { body } = require('express-validator');
 const AdminController = require('../controllers/adminController');
 const ApiError = require('../error/apiError');
-const authMiddleware = require('../middleware/authMiddleware');
+const authAdminMiddleware = require('../middleware/authAdminMiddleware');
 
 const router = new Router();
 const adminController = new AdminController();
@@ -31,6 +31,6 @@ router.post('/logout', adminController.logout); // remove refresh token
 
 router.get('/refresh', adminController.refresh); //overwrite access token, if it's died
 
-router.get('/users', authMiddleware, adminController.getUsers); //get all users
+router.get('/users', authAdminMiddleware, adminController.getUsers); //get all users
 
 module.exports = router;

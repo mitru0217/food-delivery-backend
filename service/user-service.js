@@ -1,10 +1,22 @@
 const bcrypt = require('bcrypt');
+const cloudinary = require('cloudinary').v2;
+const fs = require('fs/promises');
 const { User } = require('../models/user-model');
 const ApiError = require('../error/apiError');
 const tokenService = require('../service/token-service');
 const { generateAndSaveTokens } = require('../utils/generateAndSaveTokens');
+require('dotenv').config();
 
 class UserService {
+  constructor() {
+    this.cloudinary = cloudinary;
+    cloudinary.config({
+      cloud_name: process.env.CLOUD_NAME,
+      api_key: process.env.API_KEY,
+      api_secret: process.env.API_SECRET,
+      secure: true,
+    });
+  }
   async register(name, email, password) {
     //checking if there name, email or password
     if (!name || !email || !password) {
@@ -65,6 +77,72 @@ class UserService {
     const user = await User.findByPk({ where: userData.id });
 
     return generateAndSaveTokens(user, tokenService);
+  }
+  // Функция для обновления  avatar  в модели User
+
+  async updateAvatar(id, pathFile) {
+    try {
+      const user = await User.findByPk(id);
+      if (!user) {
+        // Обработка случая, если пользователь не найден
+        throw new Error('User not found');
+      }
+      const { secure_url: avatar, public_id: idCloudAvatar } =
+        await this.#uploadCloud(pathFile, id);
+      const oldAvatar = await this.getAvatar(id);
+      this.cloudinary.uploader.destroy(
+        oldAvatar.idCloudAvatar,
+        (err, result) => {
+          console.log(err, result);
+        }
+      );
+      await this.updateAvatarFromCloud(id, avatar, idCloudAvatar); // Вызов метода обновления изображения в базе данных
+      await fs.unlink(pathFile);
+      return avatar;
+    } catch (error) {
+      throw ApiError.internal('Error upload avatar: ' + error.message);
+    }
+  }
+
+  #uploadCloud = (pathFile, id) => {
+    return new Promise((resolve, reject) => {
+      this.cloudinary.uploader.upload(
+        pathFile,
+        {
+          folder: `food-delivery/avatars/${id}`,
+          transformation: {
+            width: 40,
+            height: 40,
+            crop: 'fill',
+          },
+        },
+        (error, result) => {
+          console.log(result);
+          if (error) reject(error);
+          if (result) resolve(result);
+        }
+      );
+    });
+  };
+  async updateAvatarFromCloud(id, avatar, idCloudAvatar) {
+    try {
+      const user = await User.findByPk(id);
+      if (!user) {
+        throw new Error('User not found');
+      }
+      // Обновить информацию об аватаре пользователя
+      await user.update({
+        avatar,
+        idCloudAvatar,
+      });
+      return user;
+    } catch (error) {
+      throw new Error('Failed to update avatar: ' + error.message);
+    }
+  }
+  async getAvatar(id) {
+    const { avatar, idCloudAvatar } = await User.findByPk(id);
+    return { avatar, idCloudAvatar };
   }
 }
 module.exports = new UserService();

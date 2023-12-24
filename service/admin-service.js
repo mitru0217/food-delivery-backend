@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const { User } = require('../models/user-model');
+// const { User } = require('../models/user-model');
 const { Admin } = require('../models/admin-model');
 const ApiError = require('../error/apiError');
 const adminTokenService = require('../service/admin-token-service');
@@ -79,7 +79,8 @@ class AdminService {
     if (admins.length > 0) {
       // for each user:'Admin'  we get all users from User
       for (const admin of admins) {
-        const users = await User.findAll();
+        // const users = await User.findAll();
+        const users = await Admin.findAll();
         allUsers.push(...users);
       }
       return allUsers;

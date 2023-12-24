@@ -1,6 +1,6 @@
 const sequelize = require('../db');
 const { DataTypes } = require('sequelize');
-
+const gravatar = require('gravatar');
 const User = sequelize.define(
   'user',
   {
@@ -23,9 +23,19 @@ const User = sequelize.define(
       type: DataTypes.STRING(),
       defaultValue: 'USER',
     },
+    avatar: {
+      type: DataTypes.STRING(),
+      defaultValue: function () {
+        return gravatar.url(this.email, { s: '40' }, true);
+      },
+    },
+    idCloudAvatar: {
+      type: DataTypes.STRING(),
+      defaultValue: null,
+    },
   },
   {
-    tableName: 'user',
+    tableName: 'users',
   }
 );
 

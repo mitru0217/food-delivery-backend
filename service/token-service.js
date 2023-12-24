@@ -22,6 +22,20 @@ class TokenService {
       const userData = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
       return userData;
     } catch (e) {
+      // Если токен истек, создаем новый access token с помощью refresh token
+      if (
+        e.name === 'TokenExpiredError' &&
+        this.validateRefreshTokenExists(userData)
+      ) {
+        const newAccessToken = jwt.sign(
+          payload,
+          process.env.JWT_ACCESS_SECRET,
+          {
+            expiresIn: '60m',
+          }
+        );
+        return { accessToken: newAccessToken };
+      }
       return null;
     }
   }
@@ -32,6 +46,13 @@ class TokenService {
     } catch (e) {
       return null;
     }
+  }
+  //Этот метод проверяет, существует ли refreshToken для данного пользователя в базе данных.
+  async validateRefreshTokenExists(userData) {
+    const tokenData = await Token.findOne({
+      where: { userID: userData.userId },
+    });
+    return !!tokenData;
   }
   // the function  saves a refresh token in the database for a specific user
   async saveToken(userId, refreshToken) {

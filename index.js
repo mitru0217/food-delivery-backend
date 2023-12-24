@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const cookieParser = require('cookie-parser');
 const userModels = require('./models/user-model');
 const adminModels = require('./models/admin-model');
@@ -19,8 +20,9 @@ app.use(
 
 app.use(express.json());
 app.use(cookieParser());
-
 app.use('/api', router);
+app.use(express.static(path.resolve(__dirname, 'public', 'avatars')));
+app.use(express.static(path.resolve(__dirname, 'tmp')));
 app.use(errorHandler);
 
 const start = async () => {
