@@ -37,5 +37,8 @@ const storage = multer.diskStorage({
 });
 
 const profileMiddleware = multer({ storage: storage }).single('avatar');
+const categoryImgMiddleware = multer({ storage: storage }).single(
+  'categoryImg'
+);
 
-module.exports = { profileMiddleware };
+module.exports = { profileMiddleware, categoryImgMiddleware };

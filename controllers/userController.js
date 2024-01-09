@@ -82,7 +82,6 @@ class UserController {
   }
   async avatar(req, res, next) {
     try {
-      console.log(req.user);
       const id = req.user.userId;
 
       const pathFile = req.file.path;

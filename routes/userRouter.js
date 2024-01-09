@@ -2,7 +2,7 @@ const Router = require('express');
 const { body } = require('express-validator');
 const UserController = require('../controllers/userController');
 const ApiError = require('../error/apiError');
-const { profileMiddleware } = require('../middleware/profileMiddleware');
+const { profileMiddleware } = require('../middleware/imgMiddleware');
 const authUserMiddleware = require('../middleware/authUserMiddleware');
 
 const router = new Router();

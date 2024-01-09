@@ -43,6 +43,32 @@ const AdminToken = sequelize.define('admin-token', {
   },
 });
 
+const Categories = sequelize.define(
+  'categories',
+  {
+    id: {
+      type: DataTypes.INTEGER(),
+      primaryKey: true,
+      autoIncrement: true,
+      unique: true,
+      allowNull: false,
+    },
+    name: {
+      type: DataTypes.STRING(100),
+      unique: true,
+      allowNull: false,
+    },
+
+    idCloudCategoryImg: {
+      type: DataTypes.STRING(),
+      defaultValue: null,
+    },
+  },
+  {
+    tableName: 'categories',
+  }
+);
+
 // set an an association
 AdminToken.belongsTo(Admin, {
   foreignKey: 'userID',
@@ -54,4 +80,5 @@ Admin.hasMany(AdminToken, {
 module.exports = {
   Admin,
   AdminToken,
+  Categories,
 };
